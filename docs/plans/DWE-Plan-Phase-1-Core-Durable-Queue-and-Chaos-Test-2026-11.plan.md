@@ -67,3 +67,4 @@ None
 ## Progress log
 
 <!-- One line per session/review, added with `ticket.mjs log` or `ticket.mjs review` -->
+- 2026-11-24 16:31 UTC, Gemini (handoff): Done: Implemented Phase 1 Layer 1 queue, fenced worker, CLI, migrations, integration & chaos tests; go vet/build/unit tests pass; Next: Start Docker Desktop (or supply DATABASE_URL for local Postgres) and run go test -v -count=1 ./... to verify integration & SIGKILL chaos tests; Open: none; Tree: clean
