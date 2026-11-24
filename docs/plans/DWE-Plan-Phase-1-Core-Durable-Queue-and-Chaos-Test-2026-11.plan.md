@@ -32,12 +32,12 @@ None
 
 ## Acceptance criteria
 
-- [ ] AC1: Embedded SQL migration (`001_initial_schema.sql`) creates `jobs`, `dead_letter_jobs`, `workflow_runs`, `workflow_steps`, and `workflow_signals` with partial/unique indexes and zero AI-specific coupling.
-- [ ] AC2: `Enqueue` deduplicates by `(queue, idempotency_key)` and `ClaimBatch` safely claims jobs across concurrent workers using `FOR UPDATE SKIP LOCKED` and advisory-lock concurrency limits.
-- [ ] AC3: Fenced `Heartbeat`, `Complete`, `CompleteWithTx`, and `Fail` reject stale `lease_token`s; worker cancels in-flight job context on lost lease.
-- [ ] AC4: Retryable failures reschedule via full-jitter exponential backoff; exhausted or non-retryable failures move atomically to `dead_letter_jobs` and support one-time `ReplayDLQ`.
-- [ ] AC5: `ReapExpired` recovers expired `running` leases across workers; `cmd/dwe` (`migrate`, `enqueue`, `status`, `dlq list`, `dlq replay`) and `cmd/dwe-worker` build cleanly.
-- [ ] AC6: Unit tests (`go test ./internal/...`), integration tests (`queue_integration_test.go`), and multi-process `SIGKILL` chaos test (`chaos_test.go`) pass with 100% job completion and 0 duplicate side effects.
+- [x] AC1: Embedded SQL migration (`001_initial_schema.sql`) creates `jobs`, `dead_letter_jobs`, `workflow_runs`, `workflow_steps`, and `workflow_signals` with partial/unique indexes and zero AI-specific coupling. verified: dwe migrate and integration tests applied 001_initial_schema.sql creating all 5 tables and indexes on Postgres 17
+- [x] AC2: `Enqueue` deduplicates by `(queue, idempotency_key)` and `ClaimBatch` safely claims jobs across concurrent workers using `FOR UPDATE SKIP LOCKED` and advisory-lock concurrency limits. verified: TestEnqueueIdempotency, TestMultiWorkerSkipLockedNoDoubleClaim, and TestConcurrencyLimits passed
+- [x] AC3: Fenced `Heartbeat`, `Complete`, `CompleteWithTx`, and `Fail` reject stale `lease_token`s; worker cancels in-flight job context on lost lease. verified: TestFencingTokenRejectsStaleWorker passed and chaos_test.go completed 60/60 jobs with 0 duplicates
+- [x] AC4: Retryable failures reschedule via full-jitter exponential backoff; exhausted or non-retryable failures move atomically to `dead_letter_jobs` and support one-time `ReplayDLQ`. verified: TestFullJitterBounds, TestFullJitterDefaults, and TestDLQTransitionAndAtomicReplay passed
+- [x] AC5: `ReapExpired` recovers expired `running` leases across workers; `cmd/dwe` (`migrate`, `enqueue`, `status`, `dlq list`, `dlq replay`) and `cmd/dwe-worker` build cleanly. verified: TestFencingTokenRejectsStaleWorker and chaos_test.go verified ReapExpired; dwe CLI smoke test passed
+- [x] AC6: Unit tests (`go test ./internal/...`), integration tests (`queue_integration_test.go`), and multi-process `SIGKILL` chaos test (`chaos_test.go`) pass with 100% job completion and 0 duplicate side effects. verified: go test -v -count=1 ./... passed all unit, integration, and SIGKILL chaos tests (jobs=60 effects=60 worker_kills=4 recovered_after_kill=6)
 
 ## Steps
 
@@ -45,7 +45,7 @@ None
 - [x] Implement `engine/internal/queue/backoff.go` and `backoff_test.go` (AC4) verified: go test -v -count=1 ./internal/queue passes TestFullJitterBounds and TestFullJitterDefaults
 - [x] Implement `engine/internal/queue/queue.go` with `Enqueue`, `ClaimBatch`, fenced `Heartbeat`/`Complete`/`CompleteWithTx`/`Fail`, `ReapExpired`, `ListDLQ`, `ReplayDLQ`, and `Stats` (AC2, AC3, AC4, AC5) verified: go vet ./... and go build ./... pass for internal/queue
 - [x] Implement `engine/internal/worker/worker.go`, `engine/pkg/dwe/dwe.go`, `engine/cmd/dwe-worker/main.go`, and `engine/cmd/dwe/main.go` (AC3, AC5) verified: go vet ./... and go build ./... pass for worker, pkg/dwe, cmd/dwe, cmd/dwe-worker
-- [ ] Add `engine/tests/queue_integration_test.go` and `engine/tests/chaos_test.go`, and run `go vet` + unit/integration/chaos tests (AC6)
+- [x] Add `engine/tests/queue_integration_test.go` and `engine/tests/chaos_test.go`, and run `go vet` + unit/integration/chaos tests (AC6) verified: go vet ./... and go test -v -count=1 ./... passed all packages
 
 ## Risks
 
