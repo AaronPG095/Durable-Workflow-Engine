@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: Phase 1 Core Durable Queue and Chaos Test
 ticket: local://DWE:DWE-Plan-Phase-1-Core-Durable-Queue-and-Chaos-Test-2026-11
-status: planned
+status: in-progress
 priority: 
 state: 
 due: 
@@ -12,6 +12,9 @@ dependsOn:
 blueprint: docs/architecture/DWE-Blueprint-Durable-Workflow-Engine-Architecture.md
 devTicketKey: DWE:DWE-Plan-Phase-1-Core-Durable-Queue-and-Chaos-Test-2026-11
 agent: Gemini
+branch: feat/phase-1-core-durable-queue-and-chaos-test
+worktree: Durable-Workflow-Engine
+startedAt: 2026-11-24
 ---
 # Phase 1 Core Durable Queue and Chaos Test
 
@@ -38,10 +41,10 @@ None
 
 ## Steps
 
-- [ ] Scaffold `engine/go.mod`, `engine/migrations/001_initial_schema.sql`, `engine/internal/db/`, `engine/Dockerfile`, and `docker-compose.yml` (AC1)
-- [ ] Implement `engine/internal/queue/backoff.go` and `backoff_test.go` (AC4)
-- [ ] Implement `engine/internal/queue/queue.go` with `Enqueue`, `ClaimBatch`, fenced `Heartbeat`/`Complete`/`CompleteWithTx`/`Fail`, `ReapExpired`, `ListDLQ`, `ReplayDLQ`, and `Stats` (AC2, AC3, AC4, AC5)
-- [ ] Implement `engine/internal/worker/worker.go`, `engine/pkg/dwe/dwe.go`, `engine/cmd/dwe-worker/main.go`, and `engine/cmd/dwe/main.go` (AC3, AC5)
+- [x] Scaffold `engine/go.mod`, `engine/migrations/001_initial_schema.sql`, `engine/internal/db/`, `engine/Dockerfile`, and `docker-compose.yml` (AC1) verified: go build ./... compiles embedded migration and db package
+- [x] Implement `engine/internal/queue/backoff.go` and `backoff_test.go` (AC4) verified: go test -v -count=1 ./internal/queue passes TestFullJitterBounds and TestFullJitterDefaults
+- [x] Implement `engine/internal/queue/queue.go` with `Enqueue`, `ClaimBatch`, fenced `Heartbeat`/`Complete`/`CompleteWithTx`/`Fail`, `ReapExpired`, `ListDLQ`, `ReplayDLQ`, and `Stats` (AC2, AC3, AC4, AC5) verified: go vet ./... and go build ./... pass for internal/queue
+- [x] Implement `engine/internal/worker/worker.go`, `engine/pkg/dwe/dwe.go`, `engine/cmd/dwe-worker/main.go`, and `engine/cmd/dwe/main.go` (AC3, AC5) verified: go vet ./... and go build ./... pass for worker, pkg/dwe, cmd/dwe, cmd/dwe-worker
 - [ ] Add `engine/tests/queue_integration_test.go` and `engine/tests/chaos_test.go`, and run `go vet` + unit/integration/chaos tests (AC6)
 
 ## Risks
