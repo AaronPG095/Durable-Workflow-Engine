@@ -1,0 +1,23 @@
+# Go build & test outputs
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+
+# Environment & local state
+.env
+.env.*
+!.env.example
+.tmp/
+.worktrees/
+coverage/
+test-results/
+
+# OS / Editor
+.DS_Store
+Thumbs.db

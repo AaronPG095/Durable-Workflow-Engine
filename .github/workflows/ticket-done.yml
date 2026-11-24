@@ -1,0 +1,45 @@
+name: Close ticket on merge
+
+# When a PR merges, set the Notion Task of each plan it changed to Done.
+# Needs the repository secret NOTION_TOKEN (Notion internal integration shared with the Tasks database);
+# local tracker mode derives completion from the protected branch.
+
+on:
+  pull_request_target:
+    branches: ["main"]
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Number of the merged pull request
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  close-ticket:
+    name: Set Notion Task to Done
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+      || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Close tickets
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr || github.event.pull_request.number }}
+        run: node scripts/ticket.mjs ci-done --pr-number "$PR_NUMBER"
