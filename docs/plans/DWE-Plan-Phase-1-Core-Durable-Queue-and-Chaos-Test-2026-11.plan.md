@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: Phase 1 Core Durable Queue and Chaos Test
 ticket: local://DWE:DWE-Plan-Phase-1-Core-Durable-Queue-and-Chaos-Test-2026-11
-status: in-progress
+status: shipped
 priority: 
 state: 
 due: 
@@ -21,6 +21,7 @@ reviewSession: c6981401-de78-4363-9afc-1dea7613a19c
 reviewTestDropReason: t.Skip only guards missing DATABASE_URL; all integration and SIGKILL chaos tests ran and passed against Postgres 17
 baseBranch: main
 reviewFingerprint: 97da7a8a359081de14fc5aac5f9a5365fcaa616e656f1dbd4080937a14520df1
+pr: https://github.com/AaronPG095/Durable-Workflow-Engine/pull/1
 ---
 # Phase 1 Core Durable Queue and Chaos Test
 
